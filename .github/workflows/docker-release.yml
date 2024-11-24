@@ -5,12 +5,6 @@ on:
     branches:
       - main  # 触发工作流的分支
 
-permissions:
-  contents: write   # 允许写入仓库内容（用于创建和发布 Release）
-  issues: write     # 如果需要管理 Issues
-  pull-requests: write  # 如果需要管理 PR
-  actions: write    # 允许执行 GitHub Actions 操作
-  # 如果使用其他权限可以继续添加
 
 jobs:
   build:
@@ -44,5 +38,5 @@ jobs:
         with:
           files: my-image-${{ github.sha }}.tar.gz  # 上传压缩后的文件
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 使用自动生成的 GITHUB_TOKEN
+          GITHUB_TOKEN: ${{ secrets.my_token}}  # 使用自动生成的 GITHUB_TOKEN
 
