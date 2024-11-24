@@ -38,5 +38,5 @@ jobs:
         with:
           files: my-image-${{ github.sha }}.tar.gz  # 上传压缩后的文件
         env:
-          GITHUB_TOKEN: ${{ secrets.my_token}}  # 使用自动生成的 GITHUB_TOKEN
+          GITHUB_TOKEN: ${{ secrets.MY_TOKEN}}  # 使用自动生成的 GITHUB_TOKEN
 
