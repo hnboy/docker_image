@@ -27,5 +27,5 @@ jobs:
         with:
           files: my-image-${{ github.sha }}.tar  # 将生成的 tar 文件上传到 Release 页面
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # GitHub Token 用于认证
+          GITHUB_TOKEN: ${{ secrets.my_token}}  # GitHub Token 用于认证
 
