@@ -1,18 +1,26 @@
-# 使用官方的 Nginx 镜像作为基础镜像
-FROM nginx:alpine
+# 使用 Alpine 3.15 作为基础镜像
+FROM python:3.9-alpine3.15
 
-# 安装 OpenSSL（为了支持 HTTPS 和 HTTP/2）
-RUN apk update && apk add --no-cache openssl
+# 设置工作目录
+WORKDIR /app
 
-# 复制自定义的 nginx 配置文件到容器
-COPY nginx.conf /etc/nginx/nginx.conf
+# 安装构建工具和系统依赖
+RUN apk update && \
+    apk add --no-cache gcc libc-dev libffi-dev && \
+    pip install --upgrade pip
 
-# 复制 SSL 证书（如果你打算使用 HTTPS）
-#COPY certs /etc/ssl/certs
+# 复制项目文件到容器
+COPY . /app/
 
-# Expose 80 和 443 端口
-EXPOSE 80 443
+# 安装 FastAPI 和 Uvicorn
+RUN pip install fastapi uvicorn
 
-# 启动 Nginx
-CMD ["nginx", "-g", "daemon off;"]
+# 设置环境变量
+ENV PYTHONUNBUFFERED=1
+
+# 暴露应用的端口（FastAPI 默认是8000）
+EXPOSE 8000
+
+# 启动 FastAPI 应用
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
 
