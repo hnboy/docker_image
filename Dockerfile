@@ -8,7 +8,7 @@ RUN apk update && apk add --no-cache openssl
 COPY nginx.conf /etc/nginx/nginx.conf
 
 # 复制 SSL 证书（如果你打算使用 HTTPS）
-COPY certs /etc/ssl/certs
+#COPY certs /etc/ssl/certs
 
 # Expose 80 和 443 端口
 EXPOSE 80 443
