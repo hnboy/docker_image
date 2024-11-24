@@ -1,0 +1,31 @@
+name: Build Docker Image and Create Release
+
+on:
+  push:
+    branches:
+      - main  # 触发工作流的分支，可以修改为其他分支
+
+jobs:
+  build:
+    runs-on: ubuntu-latest  # 选择 GitHub 提供的 Ubuntu 运行环境
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3  # 检出代码
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2  # 设置 Docker Buildx
+
+      - name: Build Docker image
+        run: |
+          docker build -t my-image:${{ github.sha }} .  # 构建 Docker 镜像
+          docker save my-image:${{ github.sha }} -o my-image-${{ github.sha }}.tar  # 保存镜像为 tar 文件
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: softprops/action-gh-release@v1  # 创建 GitHub Release 并上传附件
+        with:
+          files: my-image-${{ github.sha }}.tar  # 将生成的 tar 文件上传到 Release 页面
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # GitHub Token 用于认证
+
