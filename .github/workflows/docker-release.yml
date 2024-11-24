@@ -4,10 +4,13 @@ on:
   push:
     branches:
       - main  # 触发工作流的分支
+    tags:
+      - 'v*'
 
 permissions:
   contents: write  # 允许推送标签、文件等
   actions: write   # 允许执行 actions 操作
+
 
 
 jobs:
@@ -30,11 +33,6 @@ jobs:
         run: |
           tar -czf my-image-${{ github.sha }}.tar.gz my-image-${{ github.sha }}.tar  # 压缩文件为 .tar.gz
           rm my-image-${{ github.sha }}.tar  # 删除原始 .tar 文件
-
-      - name: Create Git tag for release
-        run: |
-          git tag "v${{ github.sha }}"  # 使用当前 Git 提交的 SHA 创建一个标签
-          git push origin "v${{ github.sha }}"  # 将标签推送到 GitHub 仓库
 
       - name: Create GitHub Release
         id: create_release
