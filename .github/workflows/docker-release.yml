@@ -5,6 +5,10 @@ on:
     branches:
       - main  # 触发工作流的分支
 
+permissions:
+  contents: write  # 允许推送标签、文件等
+  actions: write   # 允许执行 actions 操作
+
 
 jobs:
   build:
