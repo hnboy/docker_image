@@ -2,14 +2,19 @@ name: Build Docker Image and Create Release
 
 on:
   push:
-    tags:
-      - 'v*'
     branches:
-      - main  # 触发工作流的分支，可以修改为其他分支
+      - main  # 触发工作流的分支
+
+permissions:
+  contents: write   # 允许写入仓库内容（用于创建和发布 Release）
+  issues: write     # 如果需要管理 Issues
+  pull-requests: write  # 如果需要管理 PR
+  actions: write    # 允许执行 GitHub Actions 操作
+  # 如果使用其他权限可以继续添加
 
 jobs:
   build:
-    runs-on: ubuntu-latest  # 选择 GitHub 提供的 Ubuntu 运行环境
+    runs-on: ubuntu-latest  # 使用 GitHub 提供的 Ubuntu 运行环境
 
     steps:
       - name: Checkout code
@@ -23,14 +28,21 @@ jobs:
           docker build -t my-image:${{ github.sha }} .  # 构建 Docker 镜像
           docker save my-image:${{ github.sha }} -o my-image-${{ github.sha }}.tar  # 保存镜像为 tar 文件
 
+      - name: Compress Docker image to .tar.gz
+        run: |
+          tar -czf my-image-${{ github.sha }}.tar.gz my-image-${{ github.sha }}.tar  # 压缩文件为 .tar.gz
+          rm my-image-${{ github.sha }}.tar  # 删除原始 .tar 文件
+
+      - name: Create Git tag for release
+        run: |
+          git tag "v${{ github.sha }}"  # 使用当前 Git 提交的 SHA 创建一个标签
+          git push origin "v${{ github.sha }}"  # 将标签推送到 GitHub 仓库
+
       - name: Create GitHub Release
         id: create_release
-        uses: softprops/action-gh-release@v1  # 创建 GitHub Release 并上传附件
+        uses: softprops/action-gh-release@v1  # 创建 Release 并上传附件
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
-          files: my-image-${{ github.sha }}.tar  # 将生成的 tar 文件上传到 Release 页面
+          files: my-image-${{ github.sha }}.tar.gz  # 上传压缩后的文件
         env:
-          GITHUB_TOKEN: ${{ secrets.my_token}}  # GitHub Token 用于认证
-
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # 使用自动生成的 GITHUB_TOKEN
 
