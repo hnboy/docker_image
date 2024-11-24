@@ -2,6 +2,8 @@ name: Build Docker Image and Create Release
 
 on:
   push:
+    tags:
+      - 'v*'
     branches:
       - main  # 触发工作流的分支，可以修改为其他分支
 
